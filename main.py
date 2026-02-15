@@ -28,7 +28,7 @@ while running:
         dist_food = math.hypot(v.x - pellet.x, v.y - pellet.y)
         if dist_food < v.radius + pellet.radius:
             pellet.respawn()
-            v.radius += 2 
+            v.eat()
 
     # 2. Group interaction (Vchito vs Vchito)
     # This is the part you were missing! 

@@ -18,6 +18,7 @@ class Vchito:
         
         # Physical characteristics
         self.radius = 15
+        self.max_radius = 40
         self.color = (0, 255, 255)  # Cyan neon color
         
         # Velocity: random direction but constant speed magnitude
@@ -53,3 +54,11 @@ class Vchito:
             # Anti-sticking fix: Move them apart slightly so they don't get stuck
             self.x += self.vel_x
             self.y += self.vel_y
+    
+    # Modify the growth logic
+    def eat(self):
+        if self.radius < self.max_radius:
+            self.radius += 2
+        else:
+            # Change color slightly when full 
+            self.color = (200, 255, 255)
