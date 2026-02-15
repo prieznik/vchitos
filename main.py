@@ -19,25 +19,32 @@ while running:
             running = False
 
     # --- LOGIC ---
-    pellet.move() # Now Food uses the same move() as Vchito
+    # 1. Update Food
+    pellet.move()
 
+    # 2. Population Control: Remove dead Vchitos (Radius <= 5)
+    # This acts as the 'Natural Selection' filter
+    vchitos_list = [v for v in vchitos_list if v.radius > 5.1]
+
+    # 3. Individual Update Loop
     for v in vchitos_list:
-        v.think(pellet)
-        v.move()
+        v.think(pellet) # AI calculation
+        v.move()        # Physics + Metabolism
         
-        # Food interaction
-        dist_food = math.hypot(v.x - pellet.x, v.y - pellet.y)
-        if dist_food < v.radius + pellet.radius:
+        # Check collision with Food
+        dist_to_food = math.hypot(v.x - pellet.x, v.y - pellet.y)
+        if dist_to_food < v.radius + pellet.radius:
             pellet.respawn()
             v.eat()
 
-    # Inter-vchito collisions
+    # 4. Inter-population Interaction (Collisions)
     for i in range(len(vchitos_list)):
         for j in range(i + 1, len(vchitos_list)):
             vchitos_list[i].check_collision(vchitos_list[j])
 
-    # --- RENDERING ---
+    # --- RENDERING SECTION ---
     screen.fill((30, 30, 30))
+    
     pellet.draw(screen)
     for v in vchitos_list:
         v.draw(screen)
