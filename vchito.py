@@ -24,9 +24,31 @@ class Vchito(Entity):
 
     def check_collision(self, other):
         dist = math.hypot(self.x - other.x, self.y - other.y)
-        if dist < self.radius + other.radius:
-            self.vel_x, other.vel_x = other.vel_x, self.vel_x
-            self.vel_y, other.vel_y = other.vel_y, self.vel_y
-            # Small push to prevent sticking
-            self.x += self.vel_x
-            self.y += self.vel_y
+        min_dist = self.radius + other.radius
+        
+        # We check for a slight overlap to trigger the "explosion"
+        if dist < min_dist:
+            # 1. CALCULATE DIRECTION
+            dx = self.x - other.x
+            dy = self.y - other.y
+            if dist == 0: dist = 0.1 # Prevent division by zero
+            
+            # 2. REPULSION FORCE (The "Explosion" component)
+            # Instead of just swapping, we assign new velocities 
+            # pointing AWAY from each other with high magnitude.
+            repulsion_power = 4.0 # Boost this number to increase dispersion
+            
+            self.vel_x = (dx / dist) * repulsion_power
+            self.vel_y = (dy / dist) * repulsion_power
+            other.vel_x = -(dx / dist) * repulsion_power
+            other.vel_y = -(dy / dist) * repulsion_power
+            
+            # 3. POSITION CORRECTION (Anti-sticking)
+            # Move them far apart immediately so they don't collide again next frame
+            overlap = min_dist - dist
+            separation_boost = 1.5 # Extra push factor
+            
+            self.x += (dx / dist) * (overlap * separation_boost)
+            self.y += (dy / dist) * (overlap * separation_boost)
+            other.x -= (dx / dist) * (overlap * separation_boost)
+            other.y -= (dy / dist) * (overlap * separation_boost)
