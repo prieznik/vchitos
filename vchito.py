@@ -1,6 +1,7 @@
 # vchito.py
 import pygame
 import random
+import math
 
 # Global constants for the environment
 WIDTH, HEIGHT = 600, 400
@@ -39,3 +40,16 @@ class Vchito:
     def draw(self, surface):
         """Renders the Vchito on the provided Pygame surface."""
         pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), self.radius)
+
+    def check_collision(self, other):
+        """Checks if this Vchito is colliding with another one."""
+        dist = math.hypot(self.x - other.x, self.y - other.y)
+        
+        if dist < self.radius + other.radius:
+            # Simple Physics Hack: Swap velocities to simulate a bounce
+            self.vel_x, other.vel_x = other.vel_x, self.vel_x
+            self.vel_y, other.vel_y = other.vel_y, self.vel_y
+            
+            # Anti-sticking fix: Move them apart slightly so they don't get stuck
+            self.x += self.vel_x
+            self.y += self.vel_y
