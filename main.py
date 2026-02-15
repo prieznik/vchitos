@@ -10,7 +10,7 @@ pygame.display.set_caption("Vchitos Lab - Evolutionary Simulation")
 clock = pygame.time.Clock()
 
 # Simulation Population
-vchitos_list = [Vchito() for _ in range(8)]
+vchitos_list = [Vchito() for _ in range(1)]
 food_list = [Food()] 
 
 # Timers
@@ -37,8 +37,30 @@ while running:
         f.think(vchitos_list)
         f.move()
 
-    # 2.2 Population Control (Vchito Hunger/Death)
+    # 2.2 Population Control
+    new_vchitos_list = []
+    for v in vchitos_list:
+        # Check if Vchito is still alive (hunger check)
+        if v.radius > 5.1:
+            # Check for Mitosis (Success condition)
+            if v.radius >= v.max_radius:
+                # The parent splits and we add the children to the next frame
+                new_vchitos_list.extend(v.split())
+            else:
+                # Normal behavior: hunt and move
+                if food_list:
+                    nearest_food = min(food_list, key=lambda f: math.hypot(v.x - f.x, v.y - f.y))
+                    v.think(nearest_food)
+                v.move()
+                new_vchitos_list.append(v)
+    
+    vchitos_list = new_vchitos_list
+
+    """
     vchitos_list = [v for v in vchitos_list if v.radius > 5.1]
+    """
+
+
     
     # Ensure survival (Minimum population rules)
     if len(vchitos_list) == 0:
