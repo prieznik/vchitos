@@ -22,6 +22,7 @@ while running:
     pellet.move() # Now Food uses the same move() as Vchito
 
     for v in vchitos_list:
+        v.think(pellet)
         v.move()
         
         # Food interaction

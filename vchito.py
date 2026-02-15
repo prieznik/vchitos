@@ -1,12 +1,20 @@
 # vchito.py
 import math
 from Entity import Entity
+from Brain import Brain
 
 class Vchito(Entity):
     def __init__(self):
         # Inherit from Entity: radius 15, cyan, speed 1.0 (or whatever you prefer)
         super().__init__(radius=15, color=(0, 255, 255), speed=1.0)
         self.max_radius = 40
+
+    def think(self, target):
+        """Uses the brain to adjust velocity WITHOUT resetting the object."""
+        steer_x, steer_y = Brain.seek(self, target)
+        
+        self.vel_x += steer_x
+        self.vel_y += steer_y
 
     def eat(self):
         if self.radius < self.max_radius:
