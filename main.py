@@ -1,25 +1,42 @@
 import pygame
+import math # Needed for square root
+from vchito import Vchito
+from food import Food
 
-# 1. Inicializar
 pygame.init()
-ventana = pygame.display.set_mode((600, 400))
-pygame.display.set_caption("Mi primer Vchito")
+screen = pygame.display.set_mode((600, 400))
+clock = pygame.time.Clock()
 
-# 2. Variables del bicho
-pos_x, pos_y = 300, 200
-color_bicho = (0, 255, 255) # Un celeste neón
+# Initialize entities
+vchitos_list = [Vchito() for _ in range(5)]
+pellet = Food()
 
-# 3. Loop del juego
-ejecutando = True
-while ejecutando:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            ejecutando = False
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    # Dibujar fondo y bicho
-    ventana.fill((30, 30, 30)) # Gris oscuro
-    pygame.draw.circle(ventana, color_bicho, (pos_x, pos_y), 20)
+    # Logic
+    for v in vchitos_list:
+        v.move()
+        
+        # COLLISION DETECTION: Calculate distance to food
+        # Distance = sqrt( (x2-x1)^2 + (y2-y1)^2 )
+        dist = math.hypot(v.x - pellet.x, v.y - pellet.y)
+        
+        # If distance is less than the sum of their radii, it's a collision!
+        if dist < v.radius + pellet.radius:
+            pellet.respawn()
+            v.radius += 2 # Vchito grows when it eats!
+
+    # Rendering
+    screen.fill((30, 30, 30))
+    pellet.draw(screen)
+    for v in vchitos_list:
+        v.draw(screen)
     
     pygame.display.flip()
+    clock.tick(60)
 
 pygame.quit()
