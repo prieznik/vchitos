@@ -1,16 +1,29 @@
 import math
 from Entity import Entity
 from Brain import Brain
+import random
 
 class Vchito(Entity):
     """
     Main agent class.
     Handles metabolism, size-based speed, and social collisions.
     """
-    def __init__(self):
-        super().__init__(radius=15, color=(0, 255, 255), speed=1.0)
+    def __init__(self, dna=None):
+        # DNA logic
+        if dna is None: 
+            self.dna= {
+                "speed_mult": random.uniform(0.5, 2.0),
+                "metabolism_mult": random.uniform(0.5, 1.5)
+            }
+        else:
+            self.dna = dna
+        
+        initial_speed = 1.0 * self.dna["speed_mult"]
+
+        # Physic creation
+        super().__init__(radius=15, color=(0, 255, 255), speed=initial_speed)
         self.max_radius = 40
-        self.decay_rate = 0.003 
+        self.decay_rate = 0.003 * self.dna["metabolism_mult"] * self.dna["speed_mult"]
 
     def move(self):
         """Updates physics, metabolism, and state-based coloring."""
@@ -19,11 +32,12 @@ class Vchito(Entity):
             self.radius -= self.decay_rate
         
         # 2. Dynamic State Color
+        r = int(min(255, 0 + (self.dna["speed_mult"] * 50)))
         # White when at full capacity, Cyan otherwise
         if self.radius >= self.max_radius:
             self.color = (255, 255, 255)
         else:
-            self.color = (0, 255, 255)
+            self.color = (r, 255, 255)
             
         # 3. Dynamic Speed Scaling (Inverse relation to size)
         base_radius = 15
@@ -33,11 +47,14 @@ class Vchito(Entity):
         self.x += self.vel_x * speed_factor
         self.y += self.vel_y * speed_factor
 
+        super().move()
+        """
         # 4. Boundary bounce (inherited logic)
         if self.x <= self.radius or self.x >= 600 - self.radius:
             self.vel_x *= -1
         if self.y <= self.radius or self.y >= 400 - self.radius:
             self.vel_y *= -1
+            """
     
     def think(self, target):
         """Adjusts velocity to track a target."""
