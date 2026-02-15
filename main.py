@@ -19,6 +19,7 @@ while running:
             running = False
 
     # --- LOGIC SECTION ---
+    pellet.update()
 
     # 1. Individual updates (Movement & Food)
     for v in vchitos_list:
@@ -31,7 +32,6 @@ while running:
             v.eat()
 
     # 2. Group interaction (Vchito vs Vchito)
-    # This is the part you were missing! 
     # We use a nested loop OUTSIDE the previous one for efficiency.
     for i in range(len(vchitos_list)):
         for j in range(i + 1, len(vchitos_list)):
