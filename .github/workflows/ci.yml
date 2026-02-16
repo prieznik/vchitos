@@ -1,0 +1,28 @@
+# Name of the automation workflow
+name: Continuous Integration
+
+# This defines the "Triggers" (The events that start the process)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# This defines the "Jobs" (The actual work to be done)
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t vchitos-lab:latest .
+
+      - name: Build Success
+        run: echo "The Docker image was built successfully!"
